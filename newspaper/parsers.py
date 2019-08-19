@@ -39,6 +39,14 @@ class Parser(object):
             nodes.drop_tag()
 
     @classmethod
+    def drop_tree(cls, nodes):
+        if isinstance(nodes, list):
+            for node in nodes:
+                node.drop_tree()
+        else:
+            nodes.drop_tree()
+
+    @classmethod
     def css_select(cls, node, selector):
         return node.cssselect(selector)
 
@@ -132,6 +140,10 @@ class Parser(object):
         node.append(child)
 
     @classmethod
+    def addprevious(cls, node_to_insert, element):
+        element.addprevious(node_to_insert)
+
+    @classmethod
     def childNodes(cls, node):
         return list(node)
 
@@ -156,6 +168,7 @@ class Parser(object):
             if n.tail:
                 t = cls.createElement(tag='text', text=n.tail, tail=None)
                 root.insert(idx + 1, t)
+                n.tail = None
         return list(root)
 
     @classmethod
