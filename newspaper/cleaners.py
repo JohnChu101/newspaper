@@ -7,7 +7,6 @@ import copy
 from .utils import ReplaceSequence
 from .text import innerTrim
 
-
 class DocumentCleaner(object):
 
     def __init__(self, config):
@@ -42,7 +41,7 @@ class DocumentCleaner(object):
         self.google_re = " google "
         self.entries_re = "^[^entry-]more.*$"
         self.facebook_re = "[^-]facebook"
-        self.facebook_broadcasting_re = "facebook-broadcasting"
+        self.facebook_braodcasting_re = "facebook-broadcasting"
         self.twitter_re = "[^-]twitter"
         self.tablines_replacements = ReplaceSequence()\
             .create("\n", "\n\n")\
@@ -64,7 +63,7 @@ class DocumentCleaner(object):
         doc_to_clean = self.remove_nodes_regex(doc_to_clean, self.entries_re)
         doc_to_clean = self.remove_nodes_regex(doc_to_clean, self.facebook_re)
         doc_to_clean = self.remove_nodes_regex(doc_to_clean,
-                                               self.facebook_broadcasting_re)
+                                               self.facebook_braodcasting_re)
         doc_to_clean = self.remove_nodes_regex(doc_to_clean, self.twitter_re)
         doc_to_clean = self.clean_para_spans(doc_to_clean)
         doc_to_clean = self.div_to_para(doc_to_clean, 'div')
@@ -214,6 +213,7 @@ class DocumentCleaner(object):
 
         # childNodesWithText will wrap all text nodes with <text></text> element
         kids = self.parser.childNodesWithText(div)
+        for kid in kids:
             inline_or_text = self.parser.getTag(kid) in inline_elements or self.parser.isTextNode(kid)
             is_last_child = kids[-1] == kid
             if inline_or_text:
@@ -249,6 +249,19 @@ class DocumentCleaner(object):
                 text_node_inside = False
 
         return list(div)
+
+        # flush out anything still remaining
+        if(len(replacement_text) > 0):
+            new_node = self.get_flushed_buffer(''.join(replacement_text), doc)
+            nodes_to_return.append(new_node)
+            replacement_text = []
+
+        for n in nodes_to_remove:
+            if n in nodes_to_return:
+                nodes_to_return.remove(n)
+            self.parser.remove(n)
+
+        return nodes_to_return
 
     def replace_with_para(self, doc, div):
         self.parser.replaceTag(div, 'p')

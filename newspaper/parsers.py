@@ -46,6 +46,7 @@ class Parser(object):
         else:
             nodes.drop_tree()
 
+
     @classmethod
     def css_select(cls, node, selector):
         return node.cssselect(selector)
