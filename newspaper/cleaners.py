@@ -209,7 +209,7 @@ class DocumentCleaner(object):
         text_node_inside = False
 
         # Remove spaces to avoid empty text nodes
-        self.clean_white_spaces(div)
+        # self.clean_white_spaces(div)
 
         # childNodesWithText will wrap all text nodes with <text></text> element
         kids = self.parser.childNodesWithText(div)
